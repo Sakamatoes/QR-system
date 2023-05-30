@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Certificate Generator</title>
+  </head>
+  <body>
+    <h1>Certificate Generator</h1>
+    <form action="/generate" method="POST" enctype="multipart/form-data">
+      <label for="spreadsheet">Excel Spreadsheet:</label>
+      <input type="file" name="spreadsheet" id="spreadsheet" accept=".xlsx,.xls" required/><br/><br/>
+      
+      <label for="template">Certificate Template:</label>
+      <input type="file" name="template" id="template" accept=".docx" required/><br/><br/>
+      
+      <input type="submit" value="Generate Certificates" />
+    </form>
+  </body>
+</html>
