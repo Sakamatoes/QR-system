@@ -5,6 +5,10 @@ const ExcelJS = require('exceljs');
 const fs = require('fs');
 const ejs = require('ejs');
 const qr = require('qrcode');
+const Docxtemplater = require('docxtemplater');
+const ImageModule = require('docxtemplater-image-module');
+const PizZip = require("pizzip");
+const Jimp = require("jimp");
 
 const app = express();
 const storage = multer.diskStorage({
@@ -46,7 +50,18 @@ app.get("/test", async (req, res) => {
       });
       rowsArray.push(rowData);
     });
-    });
+  });
+  
+async function addTextToImage(imagePath, text) {
+    const image = await Jimp.read(imagePath);
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+    const imageWidth = image.bitmap.width;
+    const imageHeight = image.bitmap.height;
+    image.print(font, imageWidth / 2, imageHeight / 2, text);
+    image.write(imagePath);
+}
+
+addTextToImage(__dirname + '/uploads/template.png', 'Hello World!');
 });
 app.use(express.static(path.join(__dirname, 'public')));
 
