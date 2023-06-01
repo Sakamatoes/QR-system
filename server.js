@@ -40,28 +40,33 @@ app.post(
 	async (req, res) => {
 		const rowsArray = [];
 		const workbook = new ExcelJS.Workbook();
+		const rowData = [];
 		await workbook.xlsx
 			.readFile(__dirname + "/uploads/spreadsheet.xlsx")
 			.then((data) => {
 				const worksheet = workbook.getWorksheet(1); // Assuming you want to access the first worksheet
 
 				worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-					const rowData = [];
 					row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
 						rowData.push(cell.value);
 					});
 					rowsArray.push(rowData);
-					addTextToImage(__dirname + "/uploads/template.png", rowData);
 				});
 			});
 
-		async function addTextToImage(imagePath, text) {
-			const image = await Jimp.read(imagePath);
-			const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
-			const imageWidth = image.bitmap.width;
-			const imageHeight = image.bitmap.height;
-			image.print(font, imageWidth / 2 - 100, imageHeight / 2, text);
-			image.write(imagePath);
+		addTextToImage(__dirname + "/uploads/template.png", rowData);
+
+		async function addTextToImage(imagePath, array) {
+			var index = 0;
+			for (const data of array) {
+				index++;
+				const image = await Jimp.read(imagePath);
+				const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
+				const imageWidth = image.bitmap.width;
+				const imageHeight = image.bitmap.height;
+				image.print(font, imageWidth / 3 - 100, imageHeight / 2, data);
+				image.write(__dirname + "/output/newImage" + index + ".png");
+			}
 		}
 	}
 );
