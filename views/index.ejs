@@ -1,18 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Certificate Generator</title>
-  </head>
-  <body>
-    <h1>Certificate Generator</h1>
+<head>
+  <title>QR Generator</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-wrapper">
+        <img class="logo" src="/public/uc/uc_logo.png" alt="Logo">
+        <div class="company-info">
+          <h1 class="company-name">University of the Cordilleras</h1>
+          <p class="intto">Innovation and Technology Transfer Office</p>
+        </div>
+      </div>
+    </div>
     <form action="/generate" method="POST" enctype="multipart/form-data">
-      <label for="spreadsheet">Excel Spreadsheet:</label>
-      <input type="file" name="spreadsheet" id="spreadsheet" accept=".xlsx,.xls" required/><br/><br/>
-      
-      <label for="template">Certificate Template:</label>
-      <input type="file" name="template" id="template" accept=".docx" required/><br/><br/>
-      
-      <input type="submit" value="Generate Certificates" />
+    <div class="buttons-container">
+      <div class="buttons">
+        <div class="inner1">
+          <h1>QR SYSTEM CERTIFICATION</h1><br/><br/>
+          <p>Upload your Certificates</p>
+        </div>
+        <div class="inner2">
+          <div class="file-upload">
+            <label for="spreadsheet">Excel Spreadsheet:</label>
+            <input type="file" name="spreadsheet" id="spreadsheet" accept=".xlsx,.xls" required/><br/><br/>
+          </div>
+          <div class="file-upload">
+            <label for="template">Certificate Template:</label>
+            <input type="file" name="template" id="template" accept=".png" required/><br/><br/>
+          </div>
+        </div>
+        <div class="inner3">
+          <button type="submit" class="button">Run</button>
+        </div>
+          </svg>
+        </div>
+      </div>
     </form>
-  </body>
+    </div>
+  </div>
+</body>
 </html>
