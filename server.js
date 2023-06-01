@@ -51,6 +51,7 @@ app.post(
 						rowData.push(cell.value);
 					});
 					rowsArray.push(rowData);
+					addTextToImage(__dirname + "/uploads/template.png", rowData);
 				});
 			});
 
@@ -62,8 +63,6 @@ app.post(
 			image.print(font, imageWidth / 2 - 100, imageHeight / 2, text);
 			image.write(imagePath);
 		}
-
-		addTextToImage(__dirname + "/uploads/template.png", "Arvin Antonio");
 	}
 );
 
