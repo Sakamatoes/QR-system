@@ -65,7 +65,7 @@ app.post(
 				const imageWidth = image.bitmap.width;
 				const imageHeight = image.bitmap.height;
 				image.print(font, imageWidth / 3 - 100, imageHeight / 2, data);
-				image.write(__dirname + "/output/newImage" + index + ".png");
+				image.write(__dirname + "/output/" + data + ".png");
 			}
 		}
 	}
