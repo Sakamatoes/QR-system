@@ -4,12 +4,12 @@ const multer = require("multer");
 const ExcelJS = require("exceljs");
 const fs = require("fs");
 const ejs = require("ejs");
-const qr = require("qrcode");
 const Docxtemplater = require("docxtemplater");
 const ImageModule = require("docxtemplater-image-module");
 const PizZip = require("pizzip");
 const Jimp = require("jimp");
 const cors = require("cors");
+const qr = require("qr-image");
 
 const { google } = require("googleapis");
 const dotenv = require("dotenv");
@@ -65,19 +65,6 @@ app.get("/google/redirect", async (req, res) => {
   res.send("success");
 });
 
-app.get("/saveText", async (req, res) => {
-  drive.files.create({
-    requestBody: {
-      name: "test.txt",
-      mimeType: "text/plain",
-    },
-    media: {
-      mimeType: "text/plain",
-      body: "text",
-    },
-  });
-});
-
 app.post(
   "/generate",
   upload.fields([
@@ -131,6 +118,11 @@ app.post(
           })
           .then((res) => {
             console.log(`https://drive.google.com/uc?id=${res.data.id}`);
+            const qrData = `https://drive.google.com/uc?id=${res.data.id}`;
+            const outputPath = __dirname + "/qr/" + item + "-qr.png";
+
+            const qrCode = qr.image(qrData, { type: "png" });
+            qrCode.pipe(fs.createWriteStream(outputPath));
           });
       }
       res.send("Boop");
