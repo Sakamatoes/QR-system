@@ -5,6 +5,7 @@ const { google } = require("googleapis");
 const ExcelJS = require("exceljs");
 const oauth2Client = require("../config/oauth");
 const drive = google.drive({ version: "v3", auth: oauth2Client });
+const mongoose = require("mongoose");
 const Document = require("../models/Document");
 const qr = require("qr-image");
 const upload = require("../utils/upload");
@@ -83,41 +84,85 @@ router.post(
 
       Promise.all(promises)
         .then((savedDocuments) => {
-          savedDocuments.forEach((document) => {
+          savedDocuments.forEach(async (document) => {
+            const date = new Date().toJSON().slice(0, 10);
             const docId = document._id.toString();
             const qrData = `localhost:3000/verify/${docId}`;
             const output = outputPath + "/qr/" + docId + "-qr.png";
-            const qrCode = qr.image(qrData, { type: "png" });
+            const qrCode = qr.image(qrData, {
+              type: "png",
+              ec_level: "L",
+            });
             qrCode.pipe(fs.createWriteStream(output));
           });
-          console.log("QR's created");
+          return savedDocuments;
+        })
+        .then((data) => {
+          const promise = data.map(async (document) => {
+            const date = new Date().toJSON().slice(0, 10);
+
+            const image = await Jimp.read(
+              join(
+                __dirname,
+                "..",
+                "/output/",
+                date + "-" + document.fullName + ".png"
+              )
+            );
+
+            const qr = await Jimp.read(
+              join(__dirname, "..", "/qr/", document._id + "-qr.png")
+            );
+
+            image.composite(qr, 0, 0);
+
+            await image.writeAsync(
+              join(
+                __dirname,
+                "..",
+                "/drive/",
+                date + "-" + document.fullName + ".png"
+              )
+            );
+
+            const driveFile = await drive.files.create({
+              requestBody: {
+                name: date + "-" + document.fullName + ".png",
+                mimeType: "image/png",
+              },
+              media: {
+                mimeType: "image/png",
+                body: fs.createReadStream(
+                  join(
+                    __dirname,
+                    "..",
+                    "/drive/",
+                    date + "-" + document.fullName + ".png"
+                  )
+                ),
+              },
+            });
+
+            const url = `https://drive.google.com/uc?id=${driveFile.data.id}`;
+            await Document.updateOne(
+              { _id: document._id },
+              { certificate: url }
+            );
+
+            console.log(url);
+          });
+          Promise.all(promise)
+            .then(() => {
+              console.log("All files created and uploaded successfully.");
+              res.send("Success");
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         })
         .catch((error) => {
           console.error("Error saving documents:", error);
         });
-
-      //   for (const item of names) {
-      //     drive.files
-      //       .create({
-      //         requestBody: {
-      //           name: date + "-" + item + ".png",
-      //           mimeType: "image/png",
-      //         },
-      //         media: {
-      //           mimeType: "image/png",
-      //           body: fs.createReadStream(
-      //             outputPath + "/output/" + item + ".png"
-      //           ),
-      //         },
-      //       })
-      //       .then((res) => {
-      //         console.log(`https://drive.google.com/uc?id=${res.data.id}`);
-      //         const qrData = `https://drive.google.com/uc?id=${res.data.id}`;
-      //         const output = outputPath + "/qr/" + item + "-qr.png";
-
-      //       });
-      //   }
-      //   res.send("Boop");
     }
   }
 );
