@@ -20,6 +20,7 @@ router.post(
     { name: "template", maxCount: 1 },
   ]),
   async (req, res) => {
+    const coordinates = JSON.parse(req.body.qr_coords);
     const names = [],
       eventTitles = [],
       eventLocations = [],
@@ -114,7 +115,7 @@ router.post(
               join(__dirname, "..", "/qr/", document._id + "-qr.png")
             );
 
-            image.composite(qr, 0, 0);
+            image.composite(qr, coordinates.x, coordinates.y);
 
             await image.writeAsync(
               join(
