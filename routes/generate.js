@@ -20,7 +20,8 @@ router.post(
     { name: "template", maxCount: 1 },
   ]),
   async (req, res) => {
-    const coordinates = JSON.parse(req.body.qr_coords);
+    const qr_coordinates = JSON.parse(req.body.qr_coords);
+    const name_coordinates = JSON.parse(req.body.name_coords);
     const names = [],
       eventTitles = [],
       eventLocations = [],
@@ -72,7 +73,7 @@ router.post(
         const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
         const imageWidth = image.bitmap.width;
         const imageHeight = image.bitmap.height;
-        image.print(font, imageWidth / 3 - 100, imageHeight / 2, data);
+        image.print(font, name_coordinates.x, name_coordinates.y, data);
         image.write(outputPath + "/output/" + date + "-" + data + ".png");
         const newDoc = new Document({
           fullName: data,
@@ -115,7 +116,7 @@ router.post(
               join(__dirname, "..", "/qr/", document._id + "-qr.png")
             );
 
-            image.composite(qr, coordinates.x, coordinates.y);
+            image.composite(qr, qr_coordinates.x, qr_coordinates.y);
 
             await image.writeAsync(
               join(
