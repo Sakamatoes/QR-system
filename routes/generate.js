@@ -73,7 +73,18 @@ router.post(
         const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
         const imageWidth = image.bitmap.width;
         const imageHeight = image.bitmap.height;
-        image.print(font, name_coordinates.x, name_coordinates.y, data);
+        image.print(
+          font,
+          name_coordinates.x,
+          name_coordinates.y,
+          {
+            text: data,
+            alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+            alignmentY: Jimp.VERTICAL_ALIGN_TOP,
+          },
+          name_coordinates.x + 650,
+          name_coordinates.y
+        );
         image.write(outputPath + "/output/" + date + "-" + data + ".png");
         const newDoc = new Document({
           fullName: data,
