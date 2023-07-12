@@ -16,6 +16,7 @@ app.use("/public", express.static(__dirname + "/public"));
 app.use(require("./routes/auth"));
 app.use(require("./routes/redirect"));
 app.use(require("./routes/generate"));
+app.use(express.json());
 
 try {
   const creds = fs.readFileSync("creds.json");
