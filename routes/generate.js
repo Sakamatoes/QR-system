@@ -73,19 +73,11 @@ router.post(
       const promises = names.map(async (data, index) => {
         const image = await Jimp.read(imagePath);
         const font = await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK);
-        const maxX = name_coordinates.x * 1.5;
-        image.print(
-          font,
-          name_coordinates.startX,
-          name_coordinates.startY,
-          {
-            text: data,
-            alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-            alignmentY: Jimp.VERTICAL_ALIGN_TOP,
-          },
-          name_coordinates.endX,
-          name_coordinates.endY
-        );
+        const textWidth = Jimp.measureText(font, data);
+        const centerX = (name_coordinates.startX + name_coordinates.endX) / 2;
+        const startingX = centerX - textWidth / 2;
+
+        image.print(font, startingX, name_coordinates.startY, data);
         image.write(outputPath + "/output/" + date + "-" + data + ".png");
         const newDoc = new Document({
           fullName: data,
